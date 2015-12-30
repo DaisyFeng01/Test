@@ -137,6 +137,7 @@ namespace DataBlobStorage1Sample
             await blockBlob.DeleteAsync();
 
             Console.WriteLine("new End Test Blob");
+            Console.WriteLine("new commit");
 
             Console.WriteLine("new End Test Blob");
             Console.WriteLine("12.End Test Blob");

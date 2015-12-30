@@ -136,6 +136,8 @@ namespace DataBlobStorage1Sample
             Console.WriteLine("5. Delete block Blob");
             await blockBlob.DeleteAsync();
 
+
+            Console.WriteLine("51. Test Blob");
             // When you delete a container it could take several seconds before you can recreate a container with the same
             // name - hence to enable you to run the demo in quick succession the container is not deleted. If you want 
             // to delete the container uncomment the line of code below. 

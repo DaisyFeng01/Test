@@ -107,7 +107,7 @@ namespace DataBlobStorage1Sample
                 Console.ReadLine();
                 throw;
             }
-
+      
             // To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate 
             // access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions 
             // to allow public access to blobs in this container. Uncomment the line below to use this approach. Then you can view the image 
@@ -121,12 +121,14 @@ namespace DataBlobStorage1Sample
 
             // List all the blobs in the container 
             Console.WriteLine("3. List Blobs in Container");
-            foreach (IListBlobItem blob in container.ListBlobs())
+            foreach (IListBlobItem blob in container.ListBlobs(null,true))
             {
                 // Blob type will be CloudBlockBlob, CloudPageBlob or CloudBlobDirectory
                 // Use blob.GetType() and cast to appropriate type to gain access to properties specific to each type
                 Console.WriteLine("- {0} (type: {1})", blob.Uri, blob.GetType());
             }
+
+            await ListBlobsSegmentedInFlatListing(container);
 
             // Download a blob to your file system
             Console.WriteLine("4. Download Blob from {0}", blockBlob.Uri.AbsoluteUri);
@@ -233,6 +235,35 @@ namespace DataBlobStorage1Sample
             }
 
             return storageAccount;
+        }
+
+        private static async Task ListBlobsSegmentedInFlatListing(CloudBlobContainer container)
+        {
+            //List blobs to the console window, with paging.
+            Console.WriteLine("List blobs in pages:");
+
+            int i = 0;
+            BlobContinuationToken continuationToken = null;
+            BlobResultSegment resultSegment = null;
+
+            //Call ListBlobsSegmentedAsync and enumerate the result segment returned, while the continuation token is non-null.
+            //When the continuation token is null, the last page has been returned and execution can exit the loop.
+            do
+            {
+                //This overload allows control of the page size. You can return all remaining results by passing null for the maxResults parameter,
+                //or by calling a different overload.
+                resultSegment = await container.ListBlobsSegmentedAsync("", true, BlobListingDetails.All, 10, continuationToken, null, null);
+                if (resultSegment.Results.Count<IListBlobItem>() > 0) { Console.WriteLine("Page {0}:", ++i); }
+                foreach (var blobItem in resultSegment.Results)
+                {
+                    Console.WriteLine("\t{0}", blobItem.StorageUri.PrimaryUri);
+                }
+                Console.WriteLine();
+
+                //Get the continuation token.
+                continuationToken = resultSegment.ContinuationToken;
+            }
+            while (continuationToken != null);
         }
 
     }

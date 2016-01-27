@@ -75,6 +75,7 @@ namespace DataBlobStorage1Sample
             Console.WriteLine("\nPage Blob Sample");
             BasicStoragePageBlobOperationsAsync().Wait();
 
+            Console.WriteLine("Finished.");
             Console.WriteLine("Press any key to exit");
             Console.ReadLine();
         }
